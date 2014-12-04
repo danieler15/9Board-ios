@@ -19,4 +19,7 @@
 - (void)saveContext;
 - (NSURL *)applicationDocumentsDirectory;
 
+- (void)userLoggedIn;
+- (void)userLoggedOut;
+
 @end

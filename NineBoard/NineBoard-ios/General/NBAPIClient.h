@@ -12,4 +12,11 @@
 
 @interface NBAPIClient : AFHTTPSessionManager
 
++ (NBAPIClient *)sharedAPIClient;
+
+
+- (void)userLoggedInWithFacebookId:(NSString *)facebookId name:(NSString *)name success:(void (^)(NSString *userId))success failure:(void (^)(NSError *error))failure;
+- (void)userLoggedOutWithFacebookId:(NSString *)facebookId success:(void (^)(NSString *userId))success failure:(void (^)(NSError *error))failure;
+
+
 @end

@@ -20,11 +20,17 @@ PODS:
   - AFNetworking/UIKit (2.5.0):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - Bolts (1.1.3)
+  - Facebook-iOS-SDK (3.16.2):
+    - Bolts
 
 DEPENDENCIES:
   - AFNetworking (~> 2.0)
+  - Facebook-iOS-SDK (~> 3.16.2)
 
 SPEC CHECKSUMS:
   AFNetworking: 0f54cb5d16ce38c1b76948faffb8d5fb705021c7
+  Bolts: 3db0a875235e0c9042b013af13af0f00f79b102c
+  Facebook-iOS-SDK: 34eef640c2cc4c8618ba0f574ad2b290e07f1b4e
 
 COCOAPODS: 0.33.1

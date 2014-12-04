@@ -32,5 +32,18 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>FacebookAppID</key>
+	<string>293776110812125</string>
+	<key>FacebookDisplayName</key>
+	<string>9Board</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb293776110812125</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

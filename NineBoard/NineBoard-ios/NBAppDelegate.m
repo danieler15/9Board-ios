@@ -8,7 +8,14 @@
 
 #import "NBAppDelegate.h"
 
+#import <FacebookSDK/FacebookSDK.h>
+
+#import "NBAppHelper.h"
 #import "NBHomeViewController.h"
+#import "NBLoginViewController.h"
+#import "NBFacebookHelper.h"
+#import "NBAPIClient.h"
+
 
 @implementation NBAppDelegate
 
@@ -23,10 +30,81 @@
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[[NBHomeViewController alloc] init]];
-    [self.window setRootViewController:nav];
+    if ([NBAppHelper userIsLoggedIn]) {
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[[NBHomeViewController alloc] init]];
+        [self.window setRootViewController:nav];
+    }
+    else {
+        [self.window setRootViewController:[[NBLoginViewController alloc] init]];
+    }
+    
+    
+    // Whenever a person opens the app, check for a cached session
+    if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
+        
+        // If there's one, just open the session silently, without showing the user the login UI
+        [FBSession openActiveSessionWithReadPermissions:@[@"public_profile", @"basic_info"]
+                                           allowLoginUI:NO
+                                      completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
+                                          // Handler for session state changes
+                                          // This method will be called EACH time the session state changes,
+                                          // also for intermediate states and NOT just when the session open
+                                          [NBFacebookHelper sessionStateChanged:session state:state error:error];
+        }];
+    }
+    
     
     return YES;
+}
+
+- (void)userLoggedIn {
+    [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+        if (!error) {
+            NSString *userFacebookId = result[@"id"];
+            NSString *userName = result[@"name"];
+            
+            [[NBAPIClient sharedAPIClient] userLoggedInWithFacebookId:userFacebookId name:userName success:^(NSString *userId) {
+                
+                [NBAppHelper setUserId:userId];
+                [NBAppHelper setUserFacebookId:userFacebookId];
+                [NBAppHelper setUserName:userName];
+                
+//                UINavigationController *nav = (UINavigationController *)self.window.rootViewController;
+//                [nav setViewControllers:@[[NBHomeViewController new]] animated:YES];
+                
+                UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[[NBHomeViewController alloc] init]];
+                [self.window setRootViewController:nav];
+                
+            } failure:^(NSError *error) {
+                [[[UIAlertView alloc] initWithTitle:@"Server Error" message:error.description delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil] show];
+            }];
+            
+        }
+        else {
+            [[[UIAlertView alloc] initWithTitle:@"Facebook Error" message:error.description delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil] show];
+        }
+    }];
+    
+    
+}
+
+- (void)userLoggedOut {
+    
+}
+    
+// During the Facebook login flow, your app passes control to the Facebook iOS app or Facebook in a mobile browser.
+// After authentication, your app will be called back with the session information.
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation
+{
+    // Note this handler block should be the exact same as the handler passed to any open calls.
+    [FBSession.activeSession setStateChangeHandler:
+     ^(FBSession *session, FBSessionState state, NSError *error) {
+         [NBFacebookHelper sessionStateChanged:session state:state error:error];
+     }];
+    return [FBAppCall handleOpenURL:url sourceApplication:sourceApplication];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -49,6 +127,10 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    
+    // Handle the user leaving the app while the Facebook login dialog is being shown
+    // For example: when the user presses the iOS "home" button while the login dialog is active
+    [FBAppCall handleDidBecomeActive];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

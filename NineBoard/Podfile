@@ -4,6 +4,7 @@
 target "NineBoard-ios" do
 
 pod "AFNetworking", "~> 2.0"
+pod 'Facebook-iOS-SDK', '~> 3.16.2'
 
 end
 

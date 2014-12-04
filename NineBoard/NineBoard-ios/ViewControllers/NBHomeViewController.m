@@ -128,25 +128,25 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
         return cell;
     }
     else if (indexPath.section == 2) {
-        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:kGameSelectCellIdentifier];
+        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:@"a"];
         if (!cell) {
-            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kGameSelectCellIdentifier cellPosition:NBCellPositionMiddle];
+            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"a" cellPosition:NBCellPositionMiddle];
         }
         [cell setNeedsUpdateConstraints];
         return cell;
     }
     else if (indexPath.section == 3) {
-        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:kGameSelectCellIdentifier];
+        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:@"b"];
         if (!cell) {
-            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kGameSelectCellIdentifier cellPosition:NBCellPositionTop];
+            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"b" cellPosition:NBCellPositionTop];
         }
         [cell setNeedsUpdateConstraints];
         return cell;
     }
     else if (indexPath.section == 4) {
-        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:kGameSelectCellIdentifier];
+        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:@"c"];
         if (!cell) {
-            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kGameSelectCellIdentifier cellPosition:NBCellPositionTop];
+            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"c" cellPosition:NBCellPositionTop];
         }
         [cell setNeedsUpdateConstraints];
         return cell;

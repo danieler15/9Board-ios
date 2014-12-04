@@ -8,7 +8,9 @@
 
 #import "NBAPIClient.h"
 
-static NSString *const API_BASE_URL = @"localhost://9board";
+#define NOSERVER
+
+static NSString *const API_BASE_URL = @"localhost://9board/api";
 
 @implementation NBAPIClient
 
@@ -33,5 +35,36 @@ static NSString *const API_BASE_URL = @"localhost://9board";
     
     return self;
 }
+
+#pragma mark - API requests
+
+- (void)userLoggedInWithFacebookId:(NSString *)facebookId name:(NSString *)name success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure {
+    
+#ifdef NOSERVER
+    success(@"testid");
+#else
+    NSString *url = @"user/login/facebook";
+    NSDictionary *params = @{ @"facebookId": facebookId, @"name": name };
+    
+    [self POST:url parameters:params success:^(NSURLSessionDataTask *task, id responseObject) {
+        if (success) {
+            NSString *userId = responseObject[@"userId"];
+            success(userId);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+#endif
+}
+
+#pragma mark - convenience methods
+
+
+
+
+
+
 
 @end
