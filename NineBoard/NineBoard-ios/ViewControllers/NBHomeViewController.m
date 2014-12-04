@@ -17,8 +17,14 @@
 
 @end
 
+
+#define kStatsCellIdentifier @"StatsCell"
+#define kNewGameCellIdentifier @"NewGameCell"
+#define kGameSelectCellIdentifier @"GameSelectCell"
+
 const CGFloat GAME_SELECT_CELL_HEIGHT = 80.0;
 const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
+
 
 @implementation NBHomeViewController
 
@@ -61,7 +67,7 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
 #pragma mark - tableview
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 4;
+    return 5;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -75,7 +81,7 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 2 || indexPath.section == 3) {
+    if (indexPath.section == 2 || indexPath.section == 3 || indexPath.section == 4) {
         return GAME_SELECT_CELL_HEIGHT;
     }
     return DEFAULT_SELECT_CELL_HEIGHT;
@@ -91,6 +97,8 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
         case 2:
             return @"Your Move";
         case 3:
+            return @"Their Move";
+        case 4:
             return @"Recent Games";
             
         default:
@@ -103,34 +111,42 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
     
     if (indexPath.section == 0) {
         // stats/info cell
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"StatsCell"];
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kStatsCellIdentifier];
         if (!cell) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"StatsCell"];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kStatsCellIdentifier];
             [cell.textLabel setText:@"Record: 5-2"];
         }
         return cell;
     }
     else if (indexPath.section == 1) {
         // new game cell
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"NewGameCell"];
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kNewGameCellIdentifier];
         if (!cell) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"NewGameCell"];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kNewGameCellIdentifier];
             [cell.textLabel setText:@"New Game"];
         }
         return cell;
     }
     else if (indexPath.section == 2) {
-        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:kGameSelectCellIdentifier];
         if (!cell) {
-            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell" cellPosition:NBCellPositionMiddle];
+            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kGameSelectCellIdentifier cellPosition:NBCellPositionMiddle];
         }
         [cell setNeedsUpdateConstraints];
         return cell;
     }
     else if (indexPath.section == 3) {
-        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:kGameSelectCellIdentifier];
         if (!cell) {
-            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell" cellPosition:NBCellPositionTop];
+            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kGameSelectCellIdentifier cellPosition:NBCellPositionTop];
+        }
+        [cell setNeedsUpdateConstraints];
+        return cell;
+    }
+    else if (indexPath.section == 4) {
+        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:kGameSelectCellIdentifier];
+        if (!cell) {
+            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kGameSelectCellIdentifier cellPosition:NBCellPositionTop];
         }
         [cell setNeedsUpdateConstraints];
         return cell;
@@ -139,6 +155,8 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
     if (indexPath.section == 1) {
         [self newGame];
     }
