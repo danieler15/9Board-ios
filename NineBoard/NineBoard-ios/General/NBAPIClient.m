@@ -8,6 +8,9 @@
 
 #import "NBAPIClient.h"
 
+#import "NBGameObject.h"
+
+
 #define NOSERVER
 
 static NSString *const API_BASE_URL = @"localhost://9board/api";
@@ -57,6 +60,82 @@ static NSString *const API_BASE_URL = @"localhost://9board/api";
         }
     }];
 #endif
+}
+
+- (void)userLoggedOutWithFacebookId:(NSString *)facebookId success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure {
+    
+}
+
+- (void)getAllUserGamesWithSuccess:(void (^)(NSArray *, NSArray *, NSArray *))success failure:(void (^)(NSError *))failure {
+    
+    NSMutableArray *myturn = [NSMutableArray new];
+    NSMutableArray *their = [NSMutableArray new];
+    NSMutableArray *recent = [NSMutableArray new];
+    for (int i = 0; i < 3; i++) {
+        NBGameObject *game = [[NBGameObject alloc] init];
+        game.gameId = @"sdkjfka;lsf";
+        game.opponentName = @"Gabe Stengel";
+        game.opponentId = @"akl;jsdfl;ksf";
+        game.opponentFacebookId = @"gabe.stengel";
+        game.userIsX = (i % 2 == 0) ? TRUE : FALSE;
+        game.status = NBGameStatusMyTurn;
+        game.lastMoveGrid = 1;
+        game.lastMoveDate = [NSDate date];
+        game.winnerId = nil;
+        game.winnerName = nil;
+        game.board = [NSMutableArray new];
+        for (int i = 0; i < 9; i++) {
+            NSArray *b = @[@(NBSquareTypeO), @(NBSquareTypeX), @(NBSquareTypeEmpty), @(NBSquareTypeO), @(NBSquareTypeO), @(NBSquareTypeEmpty), @(NBSquareTypeEmpty), @(NBSquareTypeEmpty), @(NBSquareTypeX)];
+            
+            [game.board addObject:b];
+        }
+        [myturn addObject:game];
+    }
+    for (int i = 0; i < 3; i++) {
+        NBGameObject *game = [[NBGameObject alloc] init];
+        game.gameId = @"sdkjfka;lsf";
+        game.opponentName = @"Gabe Stengel";
+        game.opponentId = @"akl;jsdfl;ksf";
+        game.opponentFacebookId = @"gabe.stengel";
+        game.userIsX = arc4random() < 0.5;
+        game.status = NBGameStatusOpponentTurn;
+        game.lastMoveGrid = 2;
+        game.lastMoveDate = [NSDate date];
+        game.winnerId = nil;
+        game.winnerName = nil;
+        game.board = [NSMutableArray new];
+        for (int i = 0; i < 9; i++) {
+            NSArray *b = @[@(NBSquareTypeO), @(NBSquareTypeX), @(NBSquareTypeEmpty), @(NBSquareTypeO), @(NBSquareTypeO), @(NBSquareTypeEmpty), @(NBSquareTypeEmpty), @(NBSquareTypeEmpty), @(NBSquareTypeX)];
+            
+            [game.board addObject:b];
+        }
+        [their addObject:game];
+    }
+    for (int i = 0; i < 3; i++) {
+        NBGameObject *game = [[NBGameObject alloc] init];
+        game.gameId = @"sdkjfka;lsf";
+        game.opponentName = @"Gabe Stengel";
+        game.opponentId = @"g";
+        game.opponentFacebookId = @"gabe.stengel";
+        game.userIsX = arc4random() < 0.5;
+        game.status = NBGameStatusOver;
+        game.lastMoveGrid = 1;
+        game.lastMoveDate = [NSDate date];
+        game.winnerId = @"g";
+        game.winnerName = nil;
+        game.board = [NSMutableArray new];
+        for (int i = 0; i < 9; i++) {
+            NSArray *b = @[@(NBSquareTypeO), @(NBSquareTypeX), @(NBSquareTypeEmpty), @(NBSquareTypeO), @(NBSquareTypeO), @(NBSquareTypeEmpty), @(NBSquareTypeEmpty), @(NBSquareTypeEmpty), @(NBSquareTypeX)];
+            
+            [game.board addObject:b];
+        }
+        [recent addObject:game];
+    }
+    success(myturn, their, recent);
+
+
+    
+    
 }
 
 #pragma mark - convenience methods

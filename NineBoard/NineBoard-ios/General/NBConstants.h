@@ -8,6 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSInteger, NBSquareType) {
+    NBSquareTypeX,
+    NBSquareTypeO,
+    NBSquareTypeEmpty
+};
+
 #define kKeyUserId @"userId"
 #define kKeyFacebookId @"facebookId"
 #define kKeyUserName @"userName"
+

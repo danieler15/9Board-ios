@@ -10,6 +10,14 @@
 
 @interface NBAppHelper : NSObject
 
+@property (strong, nonatomic) NSArray *allGames;
+@property (strong, nonatomic) NSArray *myTurnGames;
+@property (strong, nonatomic) NSArray *opponentTurnGames;
+@property (strong, nonatomic) NSArray *recentOverGames;
+
++ (NBAppHelper *)sharedHelper;
+
+
 + (BOOL)userIsLoggedIn;
 + (NSString *)userId;
 + (void)setUserId:(NSString *)userId;

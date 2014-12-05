@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <FacebookSDK/FacebookSDK.h>
 
-@interface NBHomeViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate>
+@interface NBHomeViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, FBFriendPickerDelegate>
 
 @end

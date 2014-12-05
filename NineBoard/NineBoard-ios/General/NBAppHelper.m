@@ -10,6 +10,19 @@
 
 @implementation NBAppHelper
 
++ (NBAppHelper *)sharedHelper {
+    static NBAppHelper *_sharedHelper = nil;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedHelper = [[self alloc] init];
+    });
+    
+    return _sharedHelper;
+}
+
+#pragma mark - class convenience methods
+
 + (BOOL)userIsLoggedIn {
     return [self userId];
 }

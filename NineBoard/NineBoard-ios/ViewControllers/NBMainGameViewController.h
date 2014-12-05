@@ -7,9 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-
 #import "NBFullGridView.h"
 
+@class NBGameObject;
+
 @interface NBMainGameViewController : UIViewController <NBFullGridViewDelegate>
+
+@property (strong, nonatomic) NBGameObject *gameObject;
 
 @end

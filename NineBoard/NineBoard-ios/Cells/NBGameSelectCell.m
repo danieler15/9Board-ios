@@ -8,6 +8,10 @@
 
 #import "NBGameSelectCell.h"
 
+#import <AFNetworking/UIImageView+AFNetworking.h>
+#import "NBGameObject.h"
+#import "NBAppHelper.h"
+
 @interface NBGameSelectCell()
 
 @property (strong, nonatomic) UIView *rootView;
@@ -72,12 +76,37 @@ const CGFloat CONTENT_VERTICAL_MARGIN = 10.0;
     
     [super updateConstraints];
 }
+
+- (void)configureWithGame:(NBGameObject *)game {
+    [self.profileImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", game.opponentFacebookId]]];
+    NSString *bigText = @"";
+    if (game.status == NBGameStatusMyTurn) {
+        bigText = [NSString stringWithFormat:@"Play Turn vs. %@", game.opponentName];
+    }
+    else if (game.status == NBGameStatusOpponentTurn) {
+        bigText = [NSString stringWithFormat:@"Waiting for %@", game.opponentName];
+    }
+    else if (game.winnerId && [game.winnerId isEqualToString:[NBAppHelper userId]]) {
+        bigText = [NSString stringWithFormat:@"You beat %@!", game.opponentName];
+    }
+    else {
+        bigText = [NSString stringWithFormat:@"%@ Beat You!", game.opponentName];
+    }
+    [self.headerLabel setText:bigText];
+    
+    
+    [self.detailLabel setText:[NSString stringWithFormat:@"Last move: %d days ago", 4]];
+}
+
+
+#pragma mark - setters
 - (UIImageView *)profileImageView {
     if (!_profileImageView) {
         _profileImageView = [[UIImageView alloc] init];
         [_profileImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
         [_profileImageView setBackgroundColor:[UIColor cyanColor]];
         _profileImageView.layer.cornerRadius = 5.0;
+        [_profileImageView setClipsToBounds:YES];
     }
     return _profileImageView;
 }
@@ -89,7 +118,6 @@ const CGFloat CONTENT_VERTICAL_MARGIN = 10.0;
         [_headerLabel setFont:[UIFont boldSystemFontOfSize:17.0]];
         [_headerLabel setAdjustsFontSizeToFitWidth:YES];
         [_headerLabel setMinimumScaleFactor:0.5];
-        [_headerLabel setText:@"Play Against Gabe Stengel"];
         //[_headerLabel setBackgroundColor:[UIColor greenColor]];
     }
     return _headerLabel;
@@ -103,7 +131,6 @@ const CGFloat CONTENT_VERTICAL_MARGIN = 10.0;
         [_detailLabel setTextColor:[UIColor grayColor]];
         [_detailLabel setAdjustsFontSizeToFitWidth:YES];
         [_detailLabel setMinimumScaleFactor:0.5];
-        [_detailLabel setText:@"Gabe played his last turn 10 days ago"];
     }
     return _detailLabel;
 }

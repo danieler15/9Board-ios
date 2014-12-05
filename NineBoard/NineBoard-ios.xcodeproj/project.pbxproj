@@ -33,6 +33,7 @@
 		60EA1FA61A3102650091416B /* NBLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EA1FA51A3102650091416B /* NBLoginViewController.m */; };
 		60EA1FA91A3105B90091416B /* NBAppHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EA1FA81A3105B90091416B /* NBAppHelper.m */; };
 		60EA1FAC1A31082B0091416B /* NBFacebookHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EA1FAB1A31082B0091416B /* NBFacebookHelper.m */; };
+		60EA1FB01A3138C60091416B /* NBGameObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EA1FAF1A3138C60091416B /* NBGameObject.m */; };
 		D6059EFDE9A44F0C97DF34BE /* libPods-NineBoard-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AF6ED361484C8FBA8F8413 /* libPods-NineBoard-ios.a */; };
 /* End PBXBuildFile section */
 
@@ -89,6 +90,8 @@
 		60EA1FA81A3105B90091416B /* NBAppHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBAppHelper.m; path = General/NBAppHelper.m; sourceTree = "<group>"; };
 		60EA1FAA1A31082B0091416B /* NBFacebookHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NBFacebookHelper.h; path = General/NBFacebookHelper.h; sourceTree = "<group>"; };
 		60EA1FAB1A31082B0091416B /* NBFacebookHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBFacebookHelper.m; path = General/NBFacebookHelper.m; sourceTree = "<group>"; };
+		60EA1FAE1A3138C60091416B /* NBGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NBGameObject.h; path = Model/NBGameObject.h; sourceTree = "<group>"; };
+		60EA1FAF1A3138C60091416B /* NBGameObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBGameObject.m; path = Model/NBGameObject.m; sourceTree = "<group>"; };
 		C9AF6ED361484C8FBA8F8413 /* libPods-NineBoard-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NineBoard-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -170,6 +173,7 @@
 				6097D9FC1A1FD67400D3EE82 /* General */,
 				6097D9FE1A1FD68F00D3EE82 /* Views */,
 				6097D9FD1A1FD68900D3EE82 /* ViewControllers */,
+				60EA1FAD1A31387B0091416B /* Model */,
 				6097D9DE1A1FD59C00D3EE82 /* Images.xcassets */,
 				6097D9DB1A1FD59C00D3EE82 /* NineBoard_ios.xcdatamodeld */,
 				6097D9D01A1FD59C00D3EE82 /* Supporting Files */,
@@ -246,6 +250,15 @@
 				602AF7601A1FF11D00379262 /* NBGridSquareView.m */,
 			);
 			name = Views;
+			sourceTree = "<group>";
+		};
+		60EA1FAD1A31387B0091416B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				60EA1FAE1A3138C60091416B /* NBGameObject.h */,
+				60EA1FAF1A3138C60091416B /* NBGameObject.m */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -388,6 +401,7 @@
 				6097DA0A1A1FE55B00D3EE82 /* NBFullGridView.m in Sources */,
 				602AF7641A200EEE00379262 /* NBAPIClient.m in Sources */,
 				6097DA011A1FD73100D3EE82 /* NBHomeViewController.m in Sources */,
+				60EA1FB01A3138C60091416B /* NBGameObject.m in Sources */,
 				6097D9DA1A1FD59C00D3EE82 /* NBAppDelegate.m in Sources */,
 				6097D9D61A1FD59C00D3EE82 /* main.m in Sources */,
 				60EA1FA61A3102650091416B /* NBLoginViewController.m in Sources */,

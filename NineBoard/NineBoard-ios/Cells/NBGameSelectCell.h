@@ -14,8 +14,12 @@ typedef NS_ENUM(NSInteger, NBCellPosition) {
     NBCellPositionMiddle
 };
 
+@class NBGameObject;
+
 @interface NBGameSelectCell : UITableViewCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier cellPosition:(NBCellPosition)cellPosition;
+
+- (void)configureWithGame:(NBGameObject *)game;
 
 @end

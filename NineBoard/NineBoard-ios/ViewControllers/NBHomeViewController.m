@@ -10,6 +10,8 @@
 
 #import "NBGameSelectCell.h"
 #import "NBMainGameViewController.h"
+#import "NBAPIClient.h"
+#import "NBAppHelper.h"
 
 @interface NBHomeViewController ()
 
@@ -40,6 +42,18 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [[NBAPIClient sharedAPIClient] getAllUserGamesWithSuccess:^(NSArray *myTurnGames, NSArray *opponentTurnGames, NSArray *recentOverGames) {
+        [NBAppHelper sharedHelper].myTurnGames = myTurnGames;
+        [NBAppHelper sharedHelper].opponentTurnGames = opponentTurnGames;
+        [NBAppHelper sharedHelper].recentOverGames = recentOverGames;
+        
+        [self.tableView reloadData];
+    } failure:^(NSError *error) {
+        NSLog(@"error: %@", error.userInfo);
+    }];
+    
+    
     [self.view setBackgroundColor:[UIColor grayColor]];
     
     [self.view addSubview:self.tableView];
@@ -72,10 +86,13 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 2) {
-        return 2;
+        return [[[NBAppHelper sharedHelper] myTurnGames] count];
     }
     if (section == 3) {
-        return 2;
+        return [[[NBAppHelper sharedHelper] opponentTurnGames] count];
+    }
+    if (section == 4) {
+        return [[[NBAppHelper sharedHelper] recentOverGames] count];
     }
     return 1;
 }
@@ -127,28 +144,25 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
         }
         return cell;
     }
-    else if (indexPath.section == 2) {
-        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:@"a"];
+    else {
+        NSArray *model;
+        if (indexPath.section == 2) {
+            model = [NBAppHelper sharedHelper].myTurnGames;
+        }
+        else if (indexPath.section == 3) {
+            model = [NBAppHelper sharedHelper].opponentTurnGames;
+        }
+        else {
+            model = [NBAppHelper sharedHelper].recentOverGames;
+        }
+        
+        
+        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:kGameSelectCellIdentifier];
         if (!cell) {
-            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"a" cellPosition:NBCellPositionMiddle];
+            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kGameSelectCellIdentifier cellPosition:NBCellPositionMiddle];
         }
         [cell setNeedsUpdateConstraints];
-        return cell;
-    }
-    else if (indexPath.section == 3) {
-        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:@"b"];
-        if (!cell) {
-            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"b" cellPosition:NBCellPositionTop];
-        }
-        [cell setNeedsUpdateConstraints];
-        return cell;
-    }
-    else if (indexPath.section == 4) {
-        NBGameSelectCell *cell = [tableView dequeueReusableCellWithIdentifier:@"c"];
-        if (!cell) {
-            cell = [[NBGameSelectCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"c" cellPosition:NBCellPositionTop];
-        }
-        [cell setNeedsUpdateConstraints];
+        [cell configureWithGame:model[indexPath.row]];
         return cell;
     }
     return nil;
@@ -161,7 +175,19 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
         [self newGame];
     }
     else {
+        NSArray *model;
+        if (indexPath.section == 2) {
+            model = [NBAppHelper sharedHelper].myTurnGames;
+        }
+        else if (indexPath.section == 3) {
+            model = [NBAppHelper sharedHelper].opponentTurnGames;
+        }
+        else {
+            model = [NBAppHelper sharedHelper].recentOverGames;
+        }
+        
         NBMainGameViewController *gameViewController = [[NBMainGameViewController alloc] init];
+        [gameViewController setGameObject:model[indexPath.row]];
         [self.navigationController pushViewController:gameViewController animated:YES];
     }
 }
@@ -175,18 +201,65 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
     [actionSheet showInView:self.view];
 }
 
+- (void)refreshData:(UIRefreshControl *)refreshControl {
+    [refreshControl endRefreshing];
+}
+
 #pragma mark - UIActionSheet
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 0) {
         // facebook
-        
+        FBFriendPickerViewController *pvc = [[FBFriendPickerViewController alloc] init];
+        [pvc loadData];
+        [pvc setTitle:@"Challenge Whom?"];
+        [pvc setDelegate:self];
+        [pvc setAllowsMultipleSelection:NO];
+        [pvc presentModallyFromViewController:self animated:YES handler:nil];
     }
     else if (buttonIndex == 1) {
         // pass and play
         
     }
 }
+#pragma mark - FBFriendPickerViewControllerDelegate
+/*
+ * Event: Error during data fetch
+ */
+- (void)friendPickerViewController:(FBFriendPickerViewController *)friendPicker
+                       handleError:(NSError *)error
+{
+    NSLog(@"Error during data fetch: %@", error.userInfo);
+}
+
+/*
+ * Event: Done button clicked
+ */
+- (void)facebookViewControllerDoneWasPressed:(id)sender {
+    FBFriendPickerViewController *friendPickerController = (FBFriendPickerViewController*)sender;
+    id<FBGraphUser> friend = (id<FBGraphUser>)friendPickerController.selection;
+
+    
+    [[sender presentingViewController] dismissViewControllerAnimated:YES completion:^{
+        [[NBAPIClient sharedAPIClient] addNewGameWithOpponentFacebookId:[friend objectID] success:^(NBGameObject *gameObject) {
+            NBMainGameViewController *gameController = [[NBMainGameViewController alloc] init];
+            [gameController setGameObject:gameObject];
+        } failure:^(NSError *error) {
+            NSLog(@"error: %@", error.userInfo);
+        }];
+    }];
+}
+
+/*
+ * Event: Cancel button clicked
+ */
+- (void)facebookViewControllerCancelWasPressed:(id)sender {
+    NSLog(@"Canceled");
+    // Dismiss the friend picker
+    [[sender presentingViewController] dismissViewControllerAnimated:YES completion:nil
+     ];
+}
+
 
 #pragma mark - getters
 
@@ -195,8 +268,11 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
         _tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleGrouped];
         [_tableView setDelegate:self];
         [_tableView setDataSource:self];
-        //[_tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLineEtched];
         [_tableView setTranslatesAutoresizingMaskIntoConstraints:NO];
+        
+        UIRefreshControl *refresh = [[UIRefreshControl alloc] init];
+        [refresh addTarget:self action:@selector(refreshData:) forControlEvents:UIControlEventValueChanged];
+        [_tableView addSubview:refresh];
     }
     return _tableView;
 }

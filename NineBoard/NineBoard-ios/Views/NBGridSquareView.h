@@ -8,11 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-typedef NS_ENUM(NSInteger, NBSquareType) {
-    NBSquareTypeX,
-    NBSquareTypeO,
-    NBSquareTypeEmpty
-};
+
 
 @interface NBGridSquareView : UIView
 

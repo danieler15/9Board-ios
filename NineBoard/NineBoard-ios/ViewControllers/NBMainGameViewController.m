@@ -12,11 +12,13 @@
 #import "NBFullGridView.h"
 #import "NBSingleGridView.h"
 #import "NBGridSquareView.h"
+#import "NBGameObject.h"
 
 @interface NBMainGameViewController ()
 
 @property (strong, nonatomic) NBGameControllerPlayersView *playersView;
 @property (strong, nonatomic) NBFullGridView *fullGridView;
+@property (nonatomic, assign) BOOL userHasMoved;
 
 @end
 
@@ -27,6 +29,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         [self setTitle:@"Your Turn"];
+        self.userHasMoved = NO;
     }
     return self;
 }
@@ -36,11 +39,12 @@
     [super viewDidLoad];
 
     [self.view setBackgroundColor:[UIColor whiteColor]];
-    
     [self.view addSubview:self.playersView];
     [self.view addSubview:self.fullGridView];
     
     [self.view setNeedsUpdateConstraints];
+    
+   
 }
 
 - (void)updateViewConstraints {
@@ -54,13 +58,36 @@
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.fullGridView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.fullGridView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.fullGridView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0]];
     
+    [self configureForGame];
     
     [super updateViewConstraints];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
+- (void)configureForGame {
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            NBGridSquareView *square = ((NBSingleGridView *)self.fullGridView.grids[i]).squares[j];
+            [square drawSquareType:NBSquareTypeEmpty animated:NO];
+            
+        }
+    }
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            NSNumber *squareValue = self.gameObject.board[i][j];
+            int squareType = [squareValue intValue];
+            
+            NBGridSquareView *square = ((NBSingleGridView *)self.fullGridView.grids[i]).squares[j];
+            if (squareType == NBSquareTypeX) {
+                [square drawSquareType:NBSquareTypeX animated:NO];
+            }
+            else if (squareType == NBSquareTypeO) {
+                [square drawSquareType:NBSquareTypeO animated:NO];
+            }
+            else {
+                [square drawSquareType:NBSquareTypeEmpty animated:NO];
+            }
+        }
+    }
 }
 
 #pragma mark - NBFullGridViewDelegate
@@ -68,16 +95,13 @@
 - (void)squareTappedWithPosition:(NSInteger)squarePos inGridWithPosition:(NSInteger)gridPos {
     NSLog(@"Square tapped-- Grid: %d, Position: %d", (int)gridPos, (int)squarePos);
     
-    if (gridPos == 0) {
-        NBGridSquareView *square = ((NBSingleGridView *)self.fullGridView.grids[8]).squares[8];
-        [square drawSquareType:NBSquareTypeEmpty animated:YES];
+    if (self.gameObject.status == NBGameStatusMyTurn && self.gameObject.lastMoveGrid == gridPos && !self.userHasMoved) {
+        // is user's turn, and he can move there
+        NBSquareType mySquareType = (self.gameObject.userIsX) ? NBSquareTypeX : NBSquareTypeO;
+        NBGridSquareView *square = ((NBSingleGridView *)self.fullGridView.grids[gridPos]).squares[squarePos];
+        [square drawSquareType:mySquareType animated:YES];
+        self.userHasMoved = YES;
     }
-    
-    
-    NBGridSquareView *square = ((NBSingleGridView *)self.fullGridView.grids[gridPos]).squares[squarePos];
-    [square drawSquareType:NBSquareTypeX animated:YES];
-    
-    
 }
 
 #pragma mark - getters
