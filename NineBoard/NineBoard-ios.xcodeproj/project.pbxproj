@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		602AF7611A1FF11D00379262 /* NBGridSquareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 602AF7601A1FF11D00379262 /* NBGridSquareView.m */; };
 		602AF7641A200EEE00379262 /* NBAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 602AF7631A200EEE00379262 /* NBAPIClient.m */; };
+		6055D9D91A4490D900311145 /* NBPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055D9D81A4490D900311145 /* NBPosition.m */; };
 		606E22791A21273B00552EDE /* NBGameSelectCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 606E22781A21273A00552EDE /* NBGameSelectCell.m */; };
 		6097D9C81A1FD59C00D3EE82 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6097D9C71A1FD59C00D3EE82 /* Foundation.framework */; };
 		6097D9CA1A1FD59C00D3EE82 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6097D9C91A1FD59C00D3EE82 /* CoreGraphics.framework */; };
@@ -53,6 +54,8 @@
 		602AF7601A1FF11D00379262 /* NBGridSquareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBGridSquareView.m; path = Views/NBGridSquareView.m; sourceTree = "<group>"; };
 		602AF7621A200EEE00379262 /* NBAPIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NBAPIClient.h; path = General/NBAPIClient.h; sourceTree = "<group>"; };
 		602AF7631A200EEE00379262 /* NBAPIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBAPIClient.m; path = General/NBAPIClient.m; sourceTree = "<group>"; };
+		6055D9D71A4490D900311145 /* NBPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NBPosition.h; path = Model/NBPosition.h; sourceTree = "<group>"; };
+		6055D9D81A4490D900311145 /* NBPosition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBPosition.m; path = Model/NBPosition.m; sourceTree = "<group>"; };
 		606E22771A21273A00552EDE /* NBGameSelectCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NBGameSelectCell.h; path = Cells/NBGameSelectCell.h; sourceTree = "<group>"; };
 		606E22781A21273A00552EDE /* NBGameSelectCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBGameSelectCell.m; path = Cells/NBGameSelectCell.m; sourceTree = "<group>"; };
 		6097D9C41A1FD59C00D3EE82 /* NineBoard-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "NineBoard-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -257,6 +260,8 @@
 			children = (
 				60EA1FAE1A3138C60091416B /* NBGameObject.h */,
 				60EA1FAF1A3138C60091416B /* NBGameObject.m */,
+				6055D9D71A4490D900311145 /* NBPosition.h */,
+				6055D9D81A4490D900311145 /* NBPosition.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -404,6 +409,7 @@
 				60EA1FB01A3138C60091416B /* NBGameObject.m in Sources */,
 				6097D9DA1A1FD59C00D3EE82 /* NBAppDelegate.m in Sources */,
 				6097D9D61A1FD59C00D3EE82 /* main.m in Sources */,
+				6055D9D91A4490D900311145 /* NBPosition.m in Sources */,
 				60EA1FA61A3102650091416B /* NBLoginViewController.m in Sources */,
 				6097DA071A1FE52C00D3EE82 /* NBGameControllerPlayersView.m in Sources */,
 				60EA1FAC1A31082B0091416B /* NBFacebookHelper.m in Sources */,

@@ -74,13 +74,12 @@ const CGFloat SQUARE_MARGIN = 4.0;
     [fullGrid squareTappedWithPosition:square.tag inGridWithPosition:self.tag];
 }
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
+- (void)highlight {
+    [self setBackgroundColor:[UIColor yellowColor]];
 }
-*/
+
+- (void)noHightlight {
+    [self setBackgroundColor:[UIColor clearColor]];
+}
 
 @end

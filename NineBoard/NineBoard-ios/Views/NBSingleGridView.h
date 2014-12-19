@@ -10,6 +10,8 @@
 
 @interface NBSingleGridView : UIView
 
+- (void)highlight;
+- (void)noHightlight;
 - (id)initWithSquareColor:(UIColor *)color;
 
 @property (strong, nonatomic) NSArray *squares;
