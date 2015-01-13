@@ -9,11 +9,11 @@
 #import "NBAPIClient.h"
 
 #import "NBGameObject.h"
+#import "NBAppHelper.h"
 
+//#define NOSERVER
 
-#define NOSERVER
-
-static NSString *const API_BASE_URL = @"localhost://9board/api";
+static NSString *const API_BASE_URL = @"http://localhost:3000/api";
 
 @implementation NBAPIClient
 
@@ -27,6 +27,7 @@ static NSString *const API_BASE_URL = @"localhost://9board/api";
     
     return _sharedAPIClient;
 }
+
 
 - (instancetype)initWithBaseURL:(NSURL *)url {
     self = [super initWithBaseURL:url];
@@ -44,10 +45,12 @@ static NSString *const API_BASE_URL = @"localhost://9board/api";
 - (void)userLoggedInWithFacebookId:(NSString *)facebookId name:(NSString *)name success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure {
     
 #ifdef NOSERVER
-    success(@"testid");
+    if (success) {
+        success(@"id");
+    }
 #else
-    NSString *url = @"user/login/facebook";
-    NSDictionary *params = @{ @"facebookId": facebookId, @"name": name };
+    NSString *url = @"user";
+    NSDictionary *params = @{ @"facebookId": facebookId, @"name": name, @"deviceId": @"TEST_DEVICE_ID" };
     
     [self POST:url parameters:params success:^(NSURLSessionDataTask *task, id responseObject) {
         if (success) {
@@ -68,6 +71,11 @@ static NSString *const API_BASE_URL = @"localhost://9board/api";
 
 - (void)getAllUserGamesWithSuccess:(void (^)(NSArray *, NSArray *, NSArray *))success failure:(void (^)(NSError *))failure {
     
+    
+#ifndef NOSERVER
+    
+#else
+    // dummy
     NSMutableArray *myturn = [NSMutableArray new];
     NSMutableArray *their = [NSMutableArray new];
     NSMutableArray *recent = [NSMutableArray new];
@@ -132,9 +140,47 @@ static NSString *const API_BASE_URL = @"localhost://9board/api";
         [recent addObject:game];
     }
     success(myturn, their, recent);
-
+#endif
 
     
+    
+}
+
+- (void)getUserStatsWithSuccess:(void (^)(int, int, int))success failure:(void (^)(NSError *))failure {
+    
+#ifdef NOSERVER
+    success(6, 3, 19);
+#else
+    
+#endif
+}
+
+- (void)playTurnInGrid:(int)grid position:(int)position forGame:(NSString *)gameId withSuccess:(void (^)(NBGameObject *))success failure:(void (^)(NSError *))failure {
+    
+    int row = -1, column = -1;
+    if (position == 0) { row = 0; column = 0; }
+    if (position == 1) { row = 0; column = 1; }
+    if (position == 2) { row = 0; column = 2; }
+    if (position == 3) { row = 1; column = 0; }
+    if (position == 4) { row = 1; column = 1; }
+    if (position == 5) { row = 1; column = 2; }
+    if (position == 6) { row = 2; column = 0; }
+    if (position == 7) { row = 2; column = 1; }
+    if (position == 8) { row = 2; column = 2; }
+    
+    NSNumber *encoded = @([[NSString stringWithFormat:@"%d%d%d", grid, row, column] intValue]);
+    NSDictionary *params = @{ @"turn": encoded };
+    NSString *url = [NSString stringWithFormat:@"api/%@/games/%@", [NBAppHelper userId], gameId];
+    
+    [self POST:url parameters:params success:^(NSURLSessionDataTask *task, id responseObject) {
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
     
 }
 

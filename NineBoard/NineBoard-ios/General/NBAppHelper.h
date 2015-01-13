@@ -14,6 +14,9 @@
 @property (strong, nonatomic) NSArray *myTurnGames;
 @property (strong, nonatomic) NSArray *opponentTurnGames;
 @property (strong, nonatomic) NSArray *recentOverGames;
+@property (nonatomic, assign) int userWins;
+@property (nonatomic, assign) int userLosses;
+@property (nonatomic, assign) int userScore;
 
 + (NBAppHelper *)sharedHelper;
 

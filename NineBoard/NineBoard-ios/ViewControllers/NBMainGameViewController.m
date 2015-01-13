@@ -14,6 +14,7 @@
 #import "NBGridSquareView.h"
 #import "NBGameObject.h"
 #import "NBPosition.h"
+#import "NBAPIClient.h"
 
 @interface NBMainGameViewController ()
 
@@ -111,7 +112,18 @@
 }
 
 - (void)playTurn {
-    
+    if (!self.userMovePosition) {
+        return;
+    }
+    [[NBAPIClient sharedAPIClient] playTurnInGrid:self.userMovePosition.gridPosition position:self.userMovePosition.innerPosition forGame:self.gameObject.gameId withSuccess:^(NBGameObject *updatedGameObject) {
+        UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"Sucess!" message:@"You have played your turn" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+        av.tag = 100;
+        [av show];
+    } failure:^(NSError *error) {
+        UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"Error!" message:@"Unable to record turn." delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+        av.tag = 200;
+        [av show];
+    }];
 }
 
 - (void)cancelMove {
@@ -123,6 +135,12 @@
     [self.cancelMoveButton setBackgroundColor:CancelMoveButtonColorDisabled];
     [self.playTurnButton setEnabled:NO];
     [self.cancelMoveButton setEnabled:NO];
+}
+
+#pragma mark - UIAlertViewDelegate
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 #pragma mark - NBFullGridViewDelegate
@@ -149,9 +167,8 @@
 
 - (NBGameControllerPlayersView *)playersView {
     if (!_playersView) {
-        _playersView = [[NBGameControllerPlayersView alloc] init];
+        _playersView = [[NBGameControllerPlayersView alloc] initWithGameObject:self.gameObject];
         [_playersView setTranslatesAutoresizingMaskIntoConstraints:NO];
-        [_playersView setBackgroundColor:[UIColor cyanColor]];
     }
     return _playersView;
 }

@@ -11,7 +11,7 @@
 
 @class NBGameObject;
 
-@interface NBMainGameViewController : UIViewController <NBFullGridViewDelegate>
+@interface NBMainGameViewController : UIViewController <NBFullGridViewDelegate, UIAlertViewDelegate>
 
 @property (strong, nonatomic) NBGameObject *gameObject;
 

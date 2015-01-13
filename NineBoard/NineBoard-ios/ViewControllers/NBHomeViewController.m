@@ -12,6 +12,7 @@
 #import "NBMainGameViewController.h"
 #import "NBAPIClient.h"
 #import "NBAppHelper.h"
+#import "NBFacebookHelper.h"
 
 @interface NBHomeViewController ()
 
@@ -43,11 +44,19 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
 {
     [super viewDidLoad];
     
+    [[NBAPIClient sharedAPIClient] getUserStatsWithSuccess:^(int wins, int losses, int cumulativeScore) {
+        [NBAppHelper sharedHelper].userWins = wins;
+        [NBAppHelper sharedHelper].userLosses = losses;
+        [NBAppHelper sharedHelper].userScore = cumulativeScore;
+        [self.tableView reloadData];
+    } failure:^(NSError *error) {
+        NSLog(@"error: %@", error.userInfo);
+    }];
+    
     [[NBAPIClient sharedAPIClient] getAllUserGamesWithSuccess:^(NSArray *myTurnGames, NSArray *opponentTurnGames, NSArray *recentOverGames) {
         [NBAppHelper sharedHelper].myTurnGames = myTurnGames;
         [NBAppHelper sharedHelper].opponentTurnGames = opponentTurnGames;
         [NBAppHelper sharedHelper].recentOverGames = recentOverGames;
-        
         [self.tableView reloadData];
     } failure:^(NSError *error) {
         NSLog(@"error: %@", error.userInfo);
@@ -81,7 +90,7 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
 #pragma mark - tableview
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 5;
+    return 6;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -108,7 +117,7 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
     
     switch (section) {
         case 0:
-            return @"";
+            return @"My Stats";
         case 1:
             return @"";
         case 2:
@@ -117,6 +126,8 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
             return @"Their Move";
         case 4:
             return @"Recent Games";
+        case 5:
+            return @"";
             
         default:
             break;
@@ -131,7 +142,7 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kStatsCellIdentifier];
         if (!cell) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kStatsCellIdentifier];
-            [cell.textLabel setText:@"Record: 5-2"];
+            [cell.textLabel setText:[NSString stringWithFormat:@"%d wins, %d losses. Total score: %d", [NBAppHelper sharedHelper].userWins, [NBAppHelper sharedHelper].userLosses, [NBAppHelper sharedHelper].userScore]];
         }
         return cell;
     }
@@ -141,6 +152,16 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
         if (!cell) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kNewGameCellIdentifier];
             [cell.textLabel setText:@"New Game"];
+        }
+        return cell;
+    }
+    else if (indexPath.section == 5) {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"logout"];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"logout"];
+            [cell setBackgroundColor:[UIColor redColor]];
+            [cell.textLabel setText:@"Log Out"];
+            [cell.textLabel setTextColor:[UIColor whiteColor]];
         }
         return cell;
     }
@@ -171,8 +192,15 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if (indexPath.section == 1) {
+    if (indexPath.section == 0) {
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+        [[NBAPIClient sharedAPIClient] userLoggedInWithFacebookId:@"id" name:@"danernst" success:nil failure:nil];
+    }
+    else if (indexPath.section == 1) {
         [self newGame];
+    }
+    else if (indexPath.section == 5) {
+        [self logout];
     }
     else {
         NSArray *model;
@@ -197,8 +225,12 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
 - (void)newGame {
     NSLog(@"creating new game");
     // present friend pick dialogue /or/ choose type of game dialogue
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"New Game" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"With Facebook Friend", @"Pass and Play", nil];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"New Game" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"With Facebook Friend", nil];
     [actionSheet showInView:self.view];
+}
+
+- (void)logout {
+    [NBFacebookHelper logout];
 }
 
 - (void)refreshData:(UIRefreshControl *)refreshControl {

@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "NBGameObject.h"
+
 @interface NBGameControllerPlayersView : UIView
+
+@property (strong, nonatomic) NBGameObject *gameObject;
+
+- (instancetype)initWithGameObject:(NBGameObject *)gameObject;
 
 @end

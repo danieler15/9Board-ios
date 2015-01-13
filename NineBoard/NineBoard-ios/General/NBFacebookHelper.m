@@ -68,9 +68,6 @@
             }
         }
         [self logout];
-        // Show the user the logged-out UI
-        NBAppDelegate *appDelegate = (NBAppDelegate *)[[UIApplication sharedApplication] delegate];
-        [appDelegate userLoggedOut];
     }
 }
 
@@ -101,6 +98,9 @@
     // Close the session and remove the access token from the cache
     // The session state handler (in the app delegate) will be called automatically
     [FBSession.activeSession closeAndClearTokenInformation];
+    // Show the user the logged-out UI
+    NBAppDelegate *appDelegate = (NBAppDelegate *)[[UIApplication sharedApplication] delegate];
+    [appDelegate userLoggedOut];
 }
 
 @end

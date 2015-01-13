@@ -64,14 +64,14 @@
             NSString *userFacebookId = result[@"id"];
             NSString *userName = result[@"name"];
             
+            NSLog(@"Logged in: %@, id: %@", userName, userFacebookId);
+            
             [[NBAPIClient sharedAPIClient] userLoggedInWithFacebookId:userFacebookId name:userName success:^(NSString *userId) {
                 
                 [NBAppHelper setUserId:userId];
                 [NBAppHelper setUserFacebookId:userFacebookId];
                 [NBAppHelper setUserName:userName];
                 
-//                UINavigationController *nav = (UINavigationController *)self.window.rootViewController;
-//                [nav setViewControllers:@[[NBHomeViewController new]] animated:YES];
                 
                 UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[[NBHomeViewController alloc] init]];
                 [self.window setRootViewController:nav];
@@ -90,7 +90,7 @@
 }
 
 - (void)userLoggedOut {
-    
+    [self.window setRootViewController:[[NBLoginViewController alloc] init]];
 }
     
 // During the Facebook login flow, your app passes control to the Facebook iOS app or Facebook in a mobile browser.
