@@ -30,4 +30,7 @@ typedef NS_ENUM(NSInteger, NBGameStatus) {
 // contains a subarray of each individual board
 @property (strong, nonatomic) NSMutableArray *board;
 
+
++ (NBGameObject *)gameObjectFromServerJSON:(id)json;
+
 @end

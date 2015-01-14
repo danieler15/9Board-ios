@@ -50,7 +50,7 @@ static NSString *const API_BASE_URL = @"http://localhost:3000/api";
     }
 #else
     NSString *url = @"user";
-    NSDictionary *params = @{ @"facebookId": facebookId, @"name": name, @"deviceId": @"TEST_DEVICE_ID" };
+    NSDictionary *params = @{ @"facebookId": @"asdf", @"name": name, @"deviceId": @"TEST_DEVICE_ID" };
     
     [self POST:url parameters:params success:^(NSURLSessionDataTask *task, id responseObject) {
         if (success) {
@@ -65,6 +65,21 @@ static NSString *const API_BASE_URL = @"http://localhost:3000/api";
 #endif
 }
 
+- (void)addNewGameWithOpponentFacebookId:(NSString *)facebookId success:(void (^)(NBGameObject *))success failure:(void (^)(NSError *))failure {
+    
+    NSString *url = [NSString stringWithFormat:@"%@/%@/games", [NBAppHelper userId], facebookId];
+    [self POST:url parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+        NBGameObject *newGame = [NBGameObject gameObjectFromServerJSON:responseObject];
+        if (success) {
+            success(newGame);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
 - (void)userLoggedOutWithFacebookId:(NSString *)facebookId success:(void (^)(NSString *))success failure:(void (^)(NSError *))failure {
     
 }
@@ -73,7 +88,17 @@ static NSString *const API_BASE_URL = @"http://localhost:3000/api";
     
     
 #ifndef NOSERVER
-    
+    NSString *url = [NSString stringWithFormat:@"user/%@/games2/all", [NBAppHelper userId]];
+    [self GET:url parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSArray *allGames = responseObject;
+        if (success) {
+            success(nil, nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
 #else
     // dummy
     NSMutableArray *myturn = [NSMutableArray new];
@@ -151,7 +176,19 @@ static NSString *const API_BASE_URL = @"http://localhost:3000/api";
 #ifdef NOSERVER
     success(6, 3, 19);
 #else
-    
+    NSString *url = [NSString stringWithFormat:@"user/%@/stats", [NBAppHelper userId]];
+    [self GET:url parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+        int wins = [responseObject[@"winsNumber"] intValue];
+        int losses = [responseObject[@"losses"] intValue];
+        int score = [responseObject[@"cumulativeScore"] intValue];
+        if (success) {
+            success(wins, losses, score);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
 #endif
 }
 

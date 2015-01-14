@@ -44,29 +44,8 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
 {
     [super viewDidLoad];
     
-    [[NBAPIClient sharedAPIClient] getUserStatsWithSuccess:^(int wins, int losses, int cumulativeScore) {
-        [NBAppHelper sharedHelper].userWins = wins;
-        [NBAppHelper sharedHelper].userLosses = losses;
-        [NBAppHelper sharedHelper].userScore = cumulativeScore;
-        [self.tableView reloadData];
-    } failure:^(NSError *error) {
-        NSLog(@"error: %@", error.userInfo);
-    }];
-    
-    [[NBAPIClient sharedAPIClient] getAllUserGamesWithSuccess:^(NSArray *myTurnGames, NSArray *opponentTurnGames, NSArray *recentOverGames) {
-        [NBAppHelper sharedHelper].myTurnGames = myTurnGames;
-        [NBAppHelper sharedHelper].opponentTurnGames = opponentTurnGames;
-        [NBAppHelper sharedHelper].recentOverGames = recentOverGames;
-        [self.tableView reloadData];
-    } failure:^(NSError *error) {
-        NSLog(@"error: %@", error.userInfo);
-    }];
-    
-    
     [self.view setBackgroundColor:[UIColor grayColor]];
-    
     [self.view addSubview:self.tableView];
-    
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(newGame)];
     [self.navigationItem setRightBarButtonItem:addButton];
     
@@ -223,10 +202,47 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
 #pragma mark -
 
 - (void)newGame {
+#pragma warn fix
+    [[NBAPIClient sharedAPIClient] addNewGameWithOpponentFacebookId:@"gabe.stengel" success:^(NBGameObject *gameObject) {
+        NBMainGameViewController *gameController = [[NBMainGameViewController alloc] init];
+        [gameController setGameObject:gameObject];
+    } failure:^(NSError *error) {
+        NSLog(@"error: %@", error.userInfo);
+    }];
+    return;
+    
+    
     NSLog(@"creating new game");
     // present friend pick dialogue /or/ choose type of game dialogue
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"New Game" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"With Facebook Friend", nil];
     [actionSheet showInView:self.view];
+}
+
+- (void)refreshSharedData:(UIRefreshControl *)refreshControl {
+    [[NBAPIClient sharedAPIClient] getUserStatsWithSuccess:^(int wins, int losses, int cumulativeScore) {
+        [NBAppHelper sharedHelper].userWins = wins;
+        [NBAppHelper sharedHelper].userLosses = losses;
+        [NBAppHelper sharedHelper].userScore = cumulativeScore;
+        
+        [[NBAPIClient sharedAPIClient] getAllUserGamesWithSuccess:^(NSArray *myTurnGames, NSArray *opponentTurnGames, NSArray *recentOverGames) {
+            [NBAppHelper sharedHelper].myTurnGames = myTurnGames;
+            [NBAppHelper sharedHelper].opponentTurnGames = opponentTurnGames;
+            [NBAppHelper sharedHelper].recentOverGames = recentOverGames;
+            
+            [self refreshDone:refreshControl];
+        } failure:^(NSError *error) {
+            NSLog(@"error: %@", error.userInfo);
+            [self refreshDone:refreshControl];
+        }];
+    } failure:^(NSError *error) {
+        NSLog(@"error: %@", error.userInfo);
+        [self refreshDone:refreshControl];
+    }];
+}
+
+- (void)refreshDone:(UIRefreshControl *)refreshControl {
+    [self.tableView reloadData];
+    [refreshControl endRefreshing];
 }
 
 - (void)logout {
@@ -234,7 +250,7 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
 }
 
 - (void)refreshData:(UIRefreshControl *)refreshControl {
-    [refreshControl endRefreshing];
+    [self refreshSharedData:refreshControl];
 }
 
 #pragma mark - UIActionSheet
@@ -272,13 +288,17 @@ const CGFloat DEFAULT_SELECT_CELL_HEIGHT = 44.0;
     id<FBGraphUser> friend = (id<FBGraphUser>)friendPickerController.selection;
 
     
+    
     [[sender presentingViewController] dismissViewControllerAnimated:YES completion:^{
-        [[NBAPIClient sharedAPIClient] addNewGameWithOpponentFacebookId:[friend objectID] success:^(NBGameObject *gameObject) {
-            NBMainGameViewController *gameController = [[NBMainGameViewController alloc] init];
-            [gameController setGameObject:gameObject];
-        } failure:^(NSError *error) {
-            NSLog(@"error: %@", error.userInfo);
-        }];
+        if (friend) {
+            [[NBAPIClient sharedAPIClient] addNewGameWithOpponentFacebookId:[friend objectID] success:^(NBGameObject *gameObject) {
+                NBMainGameViewController *gameController = [[NBMainGameViewController alloc] init];
+                [gameController setGameObject:gameObject];
+            } failure:^(NSError *error) {
+                NSLog(@"error: %@", error.userInfo);
+            }];
+        }
+        
     }];
 }
 

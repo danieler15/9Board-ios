@@ -8,6 +8,22 @@
 
 #import "NBGameObject.h"
 
+#import "NBAppHelper.h"
+
 @implementation NBGameObject
+
++ (NBGameObject *)gameObjectFromServerJSON:(id)json {
+    NBGameObject *game = [[NBGameObject alloc] init];
+    game.gameId = json[@"id"];
+    
+    
+    for (NSString *s in json[@"players"]) {
+        if (![s isEqualToString:[NBAppHelper userId]]) {
+            game.opponentId = s;
+        }
+    }
+    
+    return nil;
+}
 
 @end
